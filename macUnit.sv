@@ -47,5 +47,4 @@ always_ff @(posedge clk or negedge reset) begin
     end
 end
 
-
 endmodule

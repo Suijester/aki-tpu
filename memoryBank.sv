@@ -4,7 +4,7 @@ module memoryBank # (
 )(
     input logic clk,
 
-    input logic [matrixSize - 1:0] writeInputVector,
+    input logic writeInput, // if one input block is being written to, all of them are, although this is a simplification
     input logic [dataSize - 1:0] writeElementVector [matrixSize],
     input logic [$clog2(matrixSize) - 1:0] writeLocationVector [matrixSize],
 
@@ -21,7 +21,7 @@ generate
         ) (
             .clk(clk),
 
-            .writeInput(writeInputVector[i]),
+            .writeInput(writeInput),
             .writeElement(writeElementVector[i]),
             .writeLocation(writeLocationVector[i]),
 
@@ -30,6 +30,5 @@ generate
         )
     end
 endgenerate
-
 
 endmodule

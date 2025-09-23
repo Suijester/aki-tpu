@@ -13,11 +13,12 @@ module inputBlock # (
     input logic [$clog2(matrixSize) - 1:0] readLocation,
     output logic [dataSize - 1:0] outputElement
 );
-// create input array, and enable combinational read port
+// create input array
 logic [dataSize - 1:0] inputArray [matrixSize];
-assign outputElement = inputArray[readLocation];
 
+// read is synchronous to minimize critical path (extra cycle of latency, but higher throughput)
 always_ff @(posedge clk) begin
+    outputElement <= inputArray[readLocation];
     if (writeInput) begin
         inputArray[writeLocation] <= writeElement;
     end

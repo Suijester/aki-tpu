@@ -3,7 +3,6 @@ module memoryBank # (
     parameter dataSize = 16
 )(
     input logic clk,
-    input logic reset,
 
     input logic [matrixSize - 1:0] writeInputVector,
     input logic [dataSize - 1:0] writeElementVector [matrixSize],
@@ -21,7 +20,6 @@ generate
             .dataSize(dataSize)
         ) (
             .clk(clk),
-            .reset(reset),
 
             .writeInput(writeInputVector[i]),
             .writeElement(writeElementVector[i]),

@@ -10,12 +10,12 @@ module inputBlock # (
     input logic [dataSize - 1:0] writeElement,
     input logic [$clog2(matrixSize) - 1:0] writeLocation,
 
-    input logic [$clog2(matrixSize) - 1:0] readElement,
+    input logic [$clog2(matrixSize) - 1:0] readLocation,
     output logic [dataSize - 1:0] outputElement
 );
 // create input array, and enable combinational read port
 logic [dataSize - 1:0] inputArray [matrixSize];
-assign outputElement = inputArray[readElement];
+assign outputElement = inputArray[readLocation];
 
 always_ff @(posedge clk) begin
     if (writeInput) begin

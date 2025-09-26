@@ -9,11 +9,7 @@ module controlUnit # (
     input logic reset,
     input logic start,
 
-    input logic [dataSize - 1:0] matrixA [matrixSize][matrixSize], // (0, 0) is top left of the matrix)
-    input logic [dataSize - 1:0] matrixB [matrixSize][matrixSize],
-
     output logic writeEnable,
-    output logic [dataSize - 1:0] writeElementVector [matrixSize],
     output logic [$clog2(matrixSize) - 1:0] writeLocationVector [matrixSize],
     output logic [$clog2(matrixSize) - 1:0] readLocationVector [matrixSize],
     output logic currentBuffer, // 0 if the first buffer, 1 if the second buffer
@@ -23,23 +19,23 @@ module controlUnit # (
     output logic done
 )
 
-typedef enum logic [2:0] {
+typedef enum logic [1:0] {
     idleState,
     writingState,
-    computingStateA,
-    computingStateB,
-    completedState
+    computingState
 } tpuStates;
 
 tpuStates currentState;
 tpuStates nextState;
 
+// the number of cycles required during computation for completion, calculated via formula ((matrixSize) * 3) - 1
+localparam maxCycles = (matrixSize * 3) - 1; 
+
 // counts the number of writes we need to make
-logic [$clog2(matrixSize) - 1:0] writeCounter;
+logic [$clog2(matrixSize + 1) - 1:0] writeCounter;
 
-// to determine how long computation must last, calculated via formula ((matrixSize) * 3) - 1
-logic [$clog2((matrixSize * 3) - 1) - 1:0] cycleCounter; 
-
+// to determine how long computation must last
+logic [$clog2(maxCycles + 1) - 1:0] cycleCounter; 
 
 always_ff @(posedge clk or negedge reset) begin
     if (!reset) begin
@@ -49,27 +45,29 @@ always_ff @(posedge clk or negedge reset) begin
         currentBuffer <= 0;
     end else begin
         currentState <= nextState;
+
         case (currentState)
             idleState: begin
                 if (start) begin
                     writeCounter <= 0;
                     cycleCounter <= 0;
+                    currentBuffer <= 0;
                 end
             end
 
             writingState: begin
-                // if we've written to every row, we can reset the writeCounter for next use, otherwise we increment
-                writeCounter <= (nextState == computingStateA) ? 0 : writeCounter + 1;
+                writeCounter <= (nextState == computingState) ? 0 : writeCounter + 1;
             end
 
-            computingStateA: begin
-                // reset cycle counter if we switch buffers; else, increment
-                cycleCounter <= (nextState == computingStateB) ? 0 : cycleCounter + 1; 
-            end
-
-            computingStateB: begin
-                // if we finish, empty cycle counter, otherwise increment
-                cycleCounter <= (nextState == completedStated) ? 0 : cycleCounter + 1;
+            computingState: begin
+                if (done) begin
+                    currentBuffer <= ~currentBuffer;
+                    cycleCounter <= 0;
+                    writeCounter <= 0;
+                end else begin
+                    cycleCounter <= cycleCounter + 1;
+                    writeCounter <= (writeCounter < matrixSize) ? writeCounter + 1 : writeCounter;
+                end
             end
         endcase
     end
@@ -78,42 +76,71 @@ end
 always_comb begin
     nextState = currentState;
     writeEnable = 0;
+    writeLocationVector = '{default: '0};
+    readLocationVector ='{default: '0};
     done = 0;
-    writeElementVector = 
+    clearSignals = '{default: '0};
+    enableSignals = '{default: '0};
 
     case (currentState)
         idleState: nextState = (start) ? writingState : idleState;
 
         writingState: begin
             writeEnable = 1;
-            writeLocationVector = matrixA[writeCounter];
+
+            // write to the writeCounter location in each input block
+            genvar k;
+            for (k = 0; k < matrixSize; k = k + 1) begin
+                writeLocationVector[k] = writeCounter;
+            end
+
             // if on the next clock cycle, we'll finish writing the vectors, then continue to the first computation state
-            nextState = (writeCounter == matrixSize - 1) ? computingStateA : writingState;
+            if (writeCounter == matrixSize - 1) begin
+                clearSignals = '{default: 1'b1}; // empty the MACs
+                nextState = computingState;
+            end
         end
 
-        computingStateA: begin
+        computingState: begin
             localparam maxCycles = (matrixSize * 3) - 1; // the number of cycles required during computation for completion
 
             // writing to secondary buffer while doing computation
-            writeEnable = 1;
-            writeLocationVector = matrixB[writeCounter];
+            if (writeCounter < matrixSize) begin
+                writeEnable = 1;
+                genvar k;
+                for (k = 0; k < matrixSize; k = k + 1) begin
+                    writeLocationVector[k] = writeCounter;
+                end
+            end
 
             // signals and read locations during computation
-
             // enable signal compute
             genvar i, j;
             for (i = 0; i < matrixSize; i = i + 1) begin
                 for (j = 0; j < matrixSize; j = j + 1) begin
                     // if the location sums to cycleCounter or less, then activate
                     // but if the location coordinates have already been on for matrixSize cycles, then deactivate
-                    if ((i + j <= cycleCounter) & (cycleCounter < (i + j + matrixSize))) begin
+                    if ((i + j <= cycleCounter) && (cycleCounter < (i + j + matrixSize))) begin
                         enableSignals[i][j] = 1;
                     end
                 end
             end
 
             // read location compute
+            genvar k;
+            for (k = 0; k < matrixSize; k = k + 1) begin
+                if ((cycleCounter >= k) && (cycleCounter < matrixSize + l)) begin
+                    readLocationVector[k] = cycleCounter - k;
+                end else begin
+                    readLocationVector[k] = 0;
+                end
+            end
 
+            // check for completion of computation
+            if (cycleCounter == maxCycles - 1) begin
+                done = 1;
+                clearSignals = '{default: 1'b1};
+            end
         end
     endcase
 end

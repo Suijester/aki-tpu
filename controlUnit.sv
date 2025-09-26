@@ -77,7 +77,7 @@ always_comb begin
     nextState = currentState;
     writeEnable = 0;
     writeLocationVector = '{default: '0};
-    readLocationVector ='{default: '0};
+    readLocationVector = '{default: '0};
     done = 0;
     clearSignals = '{default: '0};
     enableSignals = '{default: '0};
@@ -89,9 +89,8 @@ always_comb begin
             writeEnable = 1;
 
             // write to the writeCounter location in each input block
-            genvar k;
-            for (k = 0; k < matrixSize; k = k + 1) begin
-                writeLocationVector[k] = writeCounter;
+            for (int i = 0; i < matrixSize; i = i + 1) begin
+                writeLocationVector[i] = writeCounter;
             end
 
             // if on the next clock cycle, we'll finish writing the vectors, then continue to the first computation state
@@ -107,17 +106,15 @@ always_comb begin
             // writing to secondary buffer while doing computation
             if (writeCounter < matrixSize) begin
                 writeEnable = 1;
-                genvar k;
-                for (k = 0; k < matrixSize; k = k + 1) begin
+                for (int k = 0; k < matrixSize; k = k + 1) begin
                     writeLocationVector[k] = writeCounter;
                 end
             end
 
             // signals and read locations during computation
             // enable signal compute
-            genvar i, j;
-            for (i = 0; i < matrixSize; i = i + 1) begin
-                for (j = 0; j < matrixSize; j = j + 1) begin
+            for (int i = 0; i < matrixSize; i = i + 1) begin
+                for (int j = 0; j < matrixSize; j = j + 1) begin
                     // if the location sums to cycleCounter or less, then activate
                     // but if the location coordinates have already been on for matrixSize cycles, then deactivate
                     if ((i + j <= cycleCounter) && (cycleCounter < (i + j + matrixSize))) begin
@@ -127,9 +124,8 @@ always_comb begin
             end
 
             // read location compute
-            genvar k;
-            for (k = 0; k < matrixSize; k = k + 1) begin
-                if ((cycleCounter >= k) && (cycleCounter < matrixSize + l)) begin
+            for (int k = 0; k < matrixSize; k = k + 1) begin
+                if ((cycleCounter >= k) && (cycleCounter < matrixSize + k)) begin
                     readLocationVector[k] = cycleCounter - k;
                 end else begin
                     readLocationVector[k] = 0;

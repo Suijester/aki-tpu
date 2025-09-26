@@ -1,3 +1,5 @@
+`timescale 1ns / 1ps
+
 module memoryBank # (
     parameter matrixSize = 4,
     parameter dataSize = 16

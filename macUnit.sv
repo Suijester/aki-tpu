@@ -19,8 +19,8 @@ module macUnit #(
 );
 
 // pipelined mac design, where we do input -> multiplier, multiplyReg -> adder -> output
-logic [accSize - 1:0] accReg;
-logic [(dataSize * 2) - 1:0] multiplyReg;
+logic signed [accSize - 1:0] accReg;
+logic signed [(dataSize * 2) - 1:0] multiplyReg;
 logic enableReg;
 
 assign accOutput = accReg;

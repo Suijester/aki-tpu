@@ -19,7 +19,7 @@ module systolicArray # (
 
 // wiring mesh to pass top and left down
 logic [dataSize - 1:0] topWires [matrixSize + 1][matrixSize];
-logic [dataSize - 1:0] leftWires [matrixSize + 1][matrixSize];
+logic [dataSize - 1:0] leftWires [matrixSize + 1][matrixSize]; // j and i are transposed to simplify assignment
 
 assign topWires[0] = topInputs;
 assign leftWires[0] = leftInputs;
@@ -40,7 +40,7 @@ generate
                 .topInput(topWires[i][j]),
                 .leftInput(leftWires[j][i]), // left wires are flipped j, i to represent vertical coordinates for them
 
-                .topOutput(topWires[i+1][j])
+                .topOutput(topWires[i+1][j]),
                 .leftOutput(leftWires[j+1][i]),
 
                 .accOutput(outputArray[i][j])

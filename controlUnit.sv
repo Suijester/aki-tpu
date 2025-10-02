@@ -34,7 +34,7 @@ tpuStates nextState;
 assign currentWrittenBuffer = (currentState == writingState) ? currentBuffer : ~currentBuffer;
 
 // the number of cycles required during computation for completion, calculated via formula ((matrixSize) * 3) - 1
-localparam maxCycles = (matrixSize * 3) - 1; 
+localparam maxCycles = (matrixSize * 3); 
 
 // counts the number of writes we need to make
 logic [$clog2(matrixSize + 1) - 1:0] writeCounter;
@@ -106,9 +106,6 @@ always_comb begin
         end
 
         computingState: begin
-            localparam maxCycles = (matrixSize * 3) - 1; // the number of cycles required during computation for completion
-
-            
             // writing to secondary buffer while doing computation
             if (writeCounter < matrixSize) begin
                 writeEnable = 1;
@@ -129,16 +126,17 @@ always_comb begin
                 end
             end
 
-            // read location compute
+            // read location compute, read one cycle ahead since read is registered - need to wait an extra cycle
             for (int k = 0; k < matrixSize; k = k + 1) begin
-                if ((cycleCounter >= k) && (cycleCounter < matrixSize + k)) begin
-                    readLocationVector[k] = cycleCounter - k;
+                if ((cycleCounter + 1 >= k) && (cycleCounter + 1 < matrixSize + k)) begin
+                    readLocationVector[k] = cycleCounter + 1 - k;
                 end else begin
                     readLocationVector[k] = 0;
                 end
             end
 
             // check for completion of computation
+            // maxCycles + 1 because of registered outputs
             if (cycleCounter == maxCycles) begin
                 done = 1;
                 clearSignals = '{default: 1'b1};

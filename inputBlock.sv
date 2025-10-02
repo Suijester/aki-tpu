@@ -16,10 +16,9 @@ module inputBlock # (
 // create input array
 logic [dataSize - 1:0] inputArray [matrixSize];
 
-assign outputElement = inputArray[readLocation];
-
 // read is synchronous to minimize critical path (must wait till next cycle, but higher throughput)
 always_ff @(posedge clk) begin
+    outputElement <= inputArray[readLocation];
     if (writeEnable) begin
         inputArray[writeLocation] <= writeElement;
     end

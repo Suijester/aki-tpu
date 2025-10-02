@@ -16,7 +16,8 @@ module tpuModule # (
 
     // testbench/handshaking signals (so we can pass rows)
     output logic writeEnable,
-    output logic currentBuffer // 0 if the first buffer, 1 if the second buffer
+    output logic currentBuffer, // 0 if the first buffer, 1 if the second buffer
+    output logic signed [accSize - 1:0] outputArray [matrixSize][matrixSize] 
 );
 
 logic [$clog2(matrixSize) - 1:0] writeLocationVector [matrixSize];

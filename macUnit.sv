@@ -18,10 +18,13 @@ module macUnit #(
     output logic signed [accSize - 1:0] accOutput
 );
 
-// pipelined mac design, where we do input -> multiplier, multiplyReg -> adder -> output
+// pipelined mac design, where we do register inputs, registeredInputs -> multiplier, multiplyReg -> adder -> output
 logic signed [accSize - 1:0] accReg;
 logic signed [(dataSize * 2) - 1:0] multiplyReg;
 logic enableReg;
+logic enableReg2;
+logic signed [dataSize - 1:0] topInputReg;
+logic signed [dataSize - 1:0] leftInputReg;
 
 assign accOutput = accReg;
 
@@ -33,15 +36,19 @@ always_ff @(posedge clk or negedge reset) begin
     end else begin
         topOutput <= topInput;
         leftOutput <= leftInput;
+        
+        topInputReg <= topInput;
+        leftInputReg <= leftInput;
+        enableReg <= enable;
 
         // multiplier stage (input -> multiplier)
-        multiplyReg <= topInput * leftInput;
-        enableReg <= enable;
+        multiplyReg <= topInputReg * leftInputReg;
+        enableReg2 <= clear ? 0 : enableReg;
 
         // adder & output stage (adder -> combinational register)
         if (clear) begin
             accReg <= 0;
-        end else if (enableReg) begin
+        end else if (enableReg2) begin
             accReg <= accReg + multiplyReg;
         end
     end

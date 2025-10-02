@@ -26,7 +26,9 @@ logic enableReg2;
 logic signed [dataSize - 1:0] topInputReg;
 logic signed [dataSize - 1:0] leftInputReg;
 
-assign accOutput = accReg;
+// simple ReLU activator by checking sign bit
+// max(0, accReg), so if negative, then sign bit is 1, so we can just take 0
+assign accOutput = (accReg[accSize - 1] == 1) ? 0 : accReg;
 
 always_ff @(posedge clk or negedge reset) begin
     if (!reset) begin

@@ -1,6 +1,6 @@
 # TPU-Style Matrix Multiplication Accelerator
 
-**Achieved 181 MHz clock speed on 8x8 array (23.2 GFLOPS), 176 MHz clock speed on 16x16 array (90.6 GFLOPS) in simulation. Expended power of 0.285 W on-chip, with 26.3 Junction Temp.**
+**Achieved 182 MHz clock speed on 8x8 array (23.2 GFLOPS), 177 MHz clock speed on 16x16 array (90.6 GFLOPS) in simulation. Expended power of 0.285 W on-chip, with 26.3 Junction Temp.**
 
 Synthesizable MatMul TPU-style accelerator implemented as a parameterizable systolic array, utilizing SystemVerilog. Features BRAM-inferrable double buffering to conceal I/O write latency, ReLu activation mux to enable full neural network layer execution, and scalable data sizes for different workloads. Minimally expensive on power, and timing constraints decrease minimally with array size scaling -- allowing high clock speeds regardless of matrix size. Implemented testbench to simplify testing streaming inputs for users.
 
@@ -46,6 +46,8 @@ Measured in Vivado simulation, simulated device was an Artix-7 family FPGA.
 | 16x16 | 177 MHZ | 90.624 | 0.285W |
 
 ## Running Simulation
-- Open the files in Vivado or any synthesis tool of your choice, marking all besides the testbench file as a design source.
-- Use the testbench for simulation to test larger size matrix multiplication.
+- Create a new project in Vivado targeting an Artix-7 FPGA, or in another synthesis tool of your choice.
+- Add all the `.sv` files (apart from `topModule_tb.sv`) as design sources.
+- Add `topModule_tb.sv` as a simulation source, and mark it as the top module.
+- Use the testbench for simulation to test larger size matrix multiplication, or to verify correctness.
 - All files are synthesizable (tested on Vivado), so implement a top module if necessary and it should run well!

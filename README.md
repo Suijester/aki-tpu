@@ -4,7 +4,7 @@
 
 Synthesizable MatMul TPU-style accelerator implemented as a parameterizable systolic array, utilizing SystemVerilog. Features BRAM-inferrable double buffering to conceal I/O write latency, ReLu activation mux to enable full neural network layer execution, and scalable data sizes for different workloads. Minimally expensive on power, and timing constraints decrease minimally with array size scaling -- allowing high clock speeds regardless of matrix size. Implemented testbench to simplify testing streaming inputs for users.
 
-## Operation
+## Architecture
 <img src="https://github.com/user-attachments/assets/130be6fb-6c3b-4694-abdc-2de35c2f5459" height="800">
 
 
@@ -44,3 +44,8 @@ Measured in Vivado simulation, simulated device was an Artix-7 family FPGA.
 | :--- | :--- | :--- | :--- |
 | 8x8 | 182 MHZ | 23.296 | 0.235W |
 | 16x16 | 177 MHZ | 90.624 | 0.285W |
+
+## Running Simulation
+- Open the files in Vivado or any synthesis tool of your choice, marking all besides the testbench file as a design source.
+- Use the testbench for simulation to test larger size matrix multiplication.
+- All files are synthesizable (tested on Vivado), so implement a top module if necessary and it should run well!

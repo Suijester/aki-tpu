@@ -52,3 +52,10 @@ Measured in Vivado simulation, simulated device was an Artix-7 family FPGA.
 - Add `topModule_tb.sv` as a simulation source, and mark it as the top module.
 - Use the testbench for simulation to test larger size matrix multiplication, or to verify correctness.
 - All files are synthesizable (tested on Vivado), so implement a top module if necessary and it should run well!
+
+## Challenges During Implementation
+I didn't implement every module elastically, leading to tricky problems dealing with timing - notably in the control unit, where the accelerator determined whether to read from the buffer, and if so, where. Calculating the timing when each MAC unit would complete was tricky. Additionally, there was an edge case when attempting to make the buffers BRAM-inferrable - registering reads caused desync with the control unit. Fixing this was difficult, but I resolved it by requesting reads one cycle ahead of the cycle counter artificially. 
+
+Additionally, another problem during implementation was breaking up the long critical path between reading from both buffers, deciding which read vector to use (as there are two buffers), passing the selected input to the MACs, and then performing multiplication. To break up this critical path, I registered the inputs into the MACs, which caused an extra cycle of latency, but improved throughput. The critical path then became the DSP multiplier, which forced completion in one cycle, therefore becoming the new max delay.
+
+If I were to solve this in the future, I'd likely implement some type of pipelined multiplier, whether it be implemented at a gate-level or higher level, preventing it from mapping directly to DSP. By pipelining the multiplication, the critical path would be broken up, enabling the accelerator to reach an upwards of 200-225 MHz before being throttled by something else.

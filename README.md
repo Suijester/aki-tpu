@@ -35,6 +35,7 @@ The top module attempted to preserve all logic during synthesis using anti-pruni
 | LUT | 4425 |
 | LUTRAM | 248 |
 | FF | 4424 |
+| DSP | 256 |
 | IO | 9 |
 | BUFG | 1 |
 

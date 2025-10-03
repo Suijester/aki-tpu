@@ -19,7 +19,7 @@ For simulation and synthesis, LUT arrays were used for input matrix arrays to mi
 ### Resource and Utilization
 The top module attempted to preserve all logic during synthesis using anti-pruning methods. The performance numbers reported account for this, though some pruning may still have occurred.
 
-#### 8x8
+#### 8x8 Systolic Array
 | Resource | Utilization |
 | :--- | :--- |
 | LUT | 972 |
@@ -29,7 +29,7 @@ The top module attempted to preserve all logic during synthesis using anti-pruni
 | IO | 9 |
 | BUFG | 1 |
 
-#### 16x16
+#### 16x16 Systolic Array
 | Resource | Utilization |
 | :--- | :--- |
 | LUT | 4425 |
@@ -39,6 +39,7 @@ The top module attempted to preserve all logic during synthesis using anti-pruni
 | BUFG | 1 |
 
 ### Timing & Power
+Measured in Vivado simulation, simulated device was an Artix-7 family FPGA.
 | Matrix Size | Clock Speed | GFLOPS | Power Consumption |
 | :--- | :--- | :--- | :--- |
 | 8x8 | 182 MHZ | 23.296 | 0.235W |

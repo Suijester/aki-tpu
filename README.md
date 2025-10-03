@@ -2,7 +2,7 @@
 
 **Achieved 182 MHz clock speed on 8x8 array (23.2 GFLOPS), 177 MHz clock speed on 16x16 array (90.6 GFLOPS) in simulation. Expended power of 0.285 W on-chip, with 26.3 Junction Temp.**
 
-Synthesizable MatMul TPU-style accelerator implemented as a parameterizable systolic array, utilizing SystemVerilog. Features BRAM-inferrable double buffering to conceal I/O write latency, ReLu activation mux to enable full neural network layer execution, and scalable data sizes for different workloads. Minimally expensive on power, and timing constraints decrease minimally with array size scaling -- allowing high clock speeds regardless of matrix size. Implemented testbench to simplify testing streaming inputs for users.
+Synthesizable MatMul TPU-style accelerator implemented as a parameterizable systolic array, utilizing SystemVerilog. Features BRAM-inferrable double buffering to conceal I/O write latency, ReLU activation mux to enable full neural network layer execution, and scalable data sizes for different workloads. Minimally expensive on power, and timing constraints decrease minimally with array size scaling -- allowing high clock speeds regardless of matrix size. Implemented testbench to simplify testing streaming inputs for users.
 
 ## Architecture
 <img src="https://github.com/user-attachments/assets/130be6fb-6c3b-4694-abdc-2de35c2f5459" height="800">

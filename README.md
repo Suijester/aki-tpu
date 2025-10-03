@@ -5,7 +5,7 @@
 Synthesizable MatMul TPU-style accelerator implemented as a parameterizable systolic array, utilizing SystemVerilog. Features BRAM-inferrable double buffering to conceal I/O write latency, ReLu activation mux to enable full neural network layer execution, and scalable data sizes for different workloads. Minimally expensive on power, and timing constraints decrease minimally with array size scaling -- allowing high clock speeds regardless of matrix size.
 
 ## Operation
-
+![TPU_1](https://github.com/user-attachments/assets/130be6fb-6c3b-4694-abdc-2de35c2f5459)
 
 ## Benchmarking
 

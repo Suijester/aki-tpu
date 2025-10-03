@@ -6,7 +6,6 @@ Synthesizable MatMul TPU-style accelerator implemented as a parameterizable syst
 
 ## Operation
 <img src="https://github.com/user-attachments/assets/130be6fb-6c3b-4694-abdc-2de35c2f5459" height="800">
-
 ### How it Works
 The MatMul Accelerator uses a systolic array structure for rapid multiplication, where inputs stream from a BRAM-inferrable memory bank into each Multiply-and-Accumulate Unit. Each 'MAC' unit keeps an internal register of the current matrix multiplication value. When two new inputs come in, they are multiplied and added to the internal register. <br> These internal registers are combinationally passed to the register of output values. Multiplication is synthesized to classical DSP multipliers.
 

@@ -41,7 +41,7 @@ The top module attempted to preserve all logic during synthesis using anti-pruni
 
 ### Timing & Power
 Measured in Vivado simulation, simulated device was an Artix-7 family FPGA.
-| Matrix Size | Clock Speed | GFLOPS | Power Consumption |
+| Matrix Size | Clock Speed | GOP/s | Power Consumption |
 | :--- | :--- | :--- | :--- |
 | 8x8 | 183 MHZ | 23.296 | 0.235W |
 | 16x16 | 177 MHZ | 90.624 | 0.285W |

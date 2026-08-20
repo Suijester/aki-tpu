@@ -1,6 +1,6 @@
 # TPU-Style Matrix Multiplication Accelerator
 
-**Achieved 183 MHz clock speed on 8x8 array (23.5 GFLOPS) after post-route STA. Expended power of 0.285 W on-chip, with 26.3 Junction Temp.**
+**Achieved 183 MHz clock speed on 8x8 array (23.5 GOP/s) after post-route STA. Expended power of 0.285 W on-chip, with 26.3 Junction Temp.**
 
 Synthesizable MatMul TPU-style accelerator implemented as a parameterizable systolic array, utilizing SystemVerilog. Features BRAM-inferrable double buffering to conceal I/O write latency, ReLU activation mux to enable full neural network layer execution, and scalable data sizes for different workloads. Minimally expensive on power, and timing constraints decrease minimally with array size scaling, enabling high clock speeds regardless of matrix size. Implemented testbench to simplify testing streaming inputs for users.
 
@@ -43,7 +43,7 @@ The top module attempted to preserve all logic during synthesis using anti-pruni
 Measured in Vivado simulation, simulated device was an Artix-7 family FPGA.
 | Matrix Size | Clock Speed | GFLOPS | Power Consumption |
 | :--- | :--- | :--- | :--- |
-| 8x8 | 182 MHZ | 23.296 | 0.235W |
+| 8x8 | 183 MHZ | 23.296 | 0.235W |
 | 16x16 | 177 MHZ | 90.624 | 0.285W |
 
 ## Running Simulation

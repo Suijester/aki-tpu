@@ -1,6 +1,6 @@
 # TPU-Style Matrix Multiplication Accelerator
 
-**Achieved 182 MHz clock speed on 8x8 array (23.2 GFLOPS), 177 MHz clock speed on 16x16 array (90.6 GFLOPS) in simulation. Expended power of 0.285 W on-chip, with 26.3 Junction Temp.**
+**Achieved 183 MHz clock speed on 8x8 array (23.5 GFLOPS) after post-route STA. Expended power of 0.285 W on-chip, with 26.3 Junction Temp.**
 
 Synthesizable MatMul TPU-style accelerator implemented as a parameterizable systolic array, utilizing SystemVerilog. Features BRAM-inferrable double buffering to conceal I/O write latency, ReLU activation mux to enable full neural network layer execution, and scalable data sizes for different workloads. Minimally expensive on power, and timing constraints decrease minimally with array size scaling, enabling high clock speeds regardless of matrix size. Implemented testbench to simplify testing streaming inputs for users.
 
@@ -56,6 +56,4 @@ Measured in Vivado simulation, simulated device was an Artix-7 family FPGA.
 ## Challenges During Implementation
 I didn't implement every module elastically, leading to tricky problems dealing with timing - notably in the control unit, where the accelerator determined whether to read from the buffer, and if so, where. Calculating the timing when each MAC unit would complete was tricky. Additionally, there was an edge case when attempting to make the buffers BRAM-inferrable - registering reads caused desync with the control unit. Fixing this was difficult, but I resolved it by requesting reads one cycle ahead of the cycle counter artificially. 
 
-Additionally, another problem during implementation was breaking up the long critical path between reading from both buffers, deciding which read vector to use (as there are two buffers), passing the selected input to the MACs, and then performing multiplication. To break up this critical path, I registered the inputs into the MACs, which caused an extra cycle of latency, but improved throughput. The critical path then became the DSP multiplier, which forced completion in one cycle, therefore becoming the new max delay.
-
-If I were to solve this in the future, I'd likely implement some type of pipelined multiplier, whether it be implemented at a gate-level or higher level, preventing it from mapping directly to DSP. By pipelining the multiplication, the critical path would be broken up, enabling the accelerator to reach an upwards of 200-225 MHz before being throttled by something else.
+Additionally, another problem during implementation was breaking up the long critical path between reading from both buffers, deciding which read vector to use (as there are two buffers), passing the selected input to the MACs, and then performing multiplication. To break up this critical path, I registered the inputs into the MACs, which caused an extra cycle of latency, but improved throughput. The critical path then became the asynchronous reset, which is a little harder to resolve, and improvements from here will be targeted and small, iterative changes.
